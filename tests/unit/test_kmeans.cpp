@@ -9,14 +9,22 @@
 TEST_GROUP(Kmeans)
 {
     std::vector<Point2D> data;
-    ClusterDescription descr;
 
     void setup()
     {
+        ClusterDescription descr;
         descr.std_dev = Point2D{ 42.2, 66.6 };
         descr.points_count = 200;
 
-        data = generateCluster(descr);
+        ClusterDescription descr2;
+        descr2.mean = Point2D{ 80.8, 100.2 };
+        descr2.std_dev = Point2D{ 25.4, 45.6 };
+        descr2.points_count = 198;
+
+        std::vector<ClusterDescription> info = { descr, descr2 };
+        ClusterGenerator generator { info };
+
+        data = generator.getMergedClusters();
     }
 };
 
@@ -59,13 +67,6 @@ TEST(Kmeans, assignsEachPointToACluster)
 
 TEST(Kmeans, works)
 {
-    ClusterDescription descr2;
-    descr.mean = Point2D{ 80.8, 100.2 };
-    descr.std_dev = Point2D{ 25.4, 45.6 };
-    descr.points_count = 198;
-
-    std::vector<ClusterDescription> info = { descr, descr2 };
-    const auto observations = generateClusters(info);
-    const auto means = kmeans(observations, 2);
+    const auto means = kmeans(data, 2);
     UNSIGNED_LONGS_EQUAL(2, means.size());
 }

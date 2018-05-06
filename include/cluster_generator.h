@@ -1,10 +1,19 @@
 #pragma once
 
+#include <point2D.h>
+
 #include <vector>
 
-struct Point2D;
 struct ClusterDescription;
 
-std::vector<Point2D> generateCluster(const ClusterDescription& descr);
-std::vector<Point2D> generateClusters(const std::vector<ClusterDescription>& clustersInfo);
+class ClusterGenerator
+{
+public:
+    ClusterGenerator(const std::vector<ClusterDescription>& descriptions);
+
+    const std::vector<std::vector<Point2D>>& getClusters() const;
+    std::vector<Point2D> getMergedClusters() const;
+private:
+    const std::vector<std::vector<Point2D>> _clusters;
+};
 

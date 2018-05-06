@@ -19,28 +19,26 @@ int main(int argc, char* argv[])
     descr2.std_dev = Point2D{ 20.4, 90.7 };
     descr2.points_count = 600;
 
-    const auto vec = generateCluster(descr1);
-    const auto vec2 = generateCluster(descr2);
-    if (!saveToFile("generated.png", vec, vec2))
+    const std::vector<ClusterDescription> info = { descr1, descr2 };
+    ClusterGenerator generator{ info };
+
+    const auto& originalClusters = generator.getClusters();
+    const auto data = generator.getMergedClusters();
+
+    const auto means = kmeans(data, 2);
+    const auto kmeansClusters = makeClusters(data, means);
+
+    if (!saveToFile("original.png", originalClusters[0], originalClusters[1]))
     {
         std::cerr << "Could not save first image" << std::endl;
         return EXIT_FAILURE;
     }
 
-    const std::vector<ClusterDescription> info = { descr1, descr2 };
-    const auto data = generateClusters(info);
-    if (!saveToFile(data))
-    {
-        std::cerr << "Could not save second image" << std::endl;
-        return EXIT_FAILURE;
-    }
-
-    const auto means = kmeans(data, 2);
-    const auto kmeansClusters = makeClusters(data, means);
     if (!saveToFile("kmeans.png", kmeansClusters[0], kmeansClusters[1]))
     {
-        std::cerr << "Could not save third image" << std::endl;
+        std::cerr << "Could not save second image" << std::endl;
     }
+
     for (size_t i = 0; i < 2; ++i)
     {
         std::cout << "Mean: " << means[i].x << " - " << means[i].y << std::endl;

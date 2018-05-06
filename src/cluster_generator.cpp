@@ -5,43 +5,55 @@
 
 #include <random>
 
-std::vector<Point2D> generateCluster(const ClusterDescription& descr)
+using Clusters = std::vector<std::vector<Point2D>>;
+
+Clusters generateClusters(const std::vector<ClusterDescription>& descriptions)
 {
-    std::vector<Point2D> vectorOut;
-    vectorOut.reserve(descr.points_count);
+    Clusters clusters;
+    clusters.reserve(descriptions.size());
 
     std::random_device rd;
     std::mt19937 generator{ rd() };
-    std::normal_distribution<> distr_x{ descr.mean.x, descr.std_dev.x }; 
-    std::normal_distribution<> distr_y{ descr.mean.y, descr.std_dev.y }; 
 
-    for (size_t n = 0; n < descr.points_count; ++n)
+    for (const auto& descr : descriptions)
     {
-        vectorOut.emplace_back(Point2D{ distr_x(generator), distr_y(generator) });
+        std::vector<Point2D> cluster;
+        cluster.reserve(descr.points_count);
+
+        std::normal_distribution<> distr_x{ descr.mean.x, descr.std_dev.x };
+        std::normal_distribution<> distr_y{ descr.mean.y, descr.std_dev.y };
+
+        for (size_t n = 0; n < descr.points_count; ++n)
+        {
+            cluster.emplace_back(Point2D{ distr_x(generator), distr_y(generator) });
+        }
+
+        clusters.emplace_back(std::move(cluster));
     }
-    
-    return vectorOut;
+
+    return clusters;
 }
 
-std::vector<Point2D> generateClusters(const std::vector<ClusterDescription>& clustersInfo)
+ClusterGenerator::ClusterGenerator(const std::vector<ClusterDescription>& descriptions)
+    : _clusters(generateClusters(descriptions))
+{ }
+
+const Clusters& ClusterGenerator::getClusters() const
 {
-    const auto countOp = [](size_t a, const ClusterDescription& b) { return a + b.points_count; };
-    const auto totalSize = std::accumulate(clustersInfo.begin(), clustersInfo.end(), 0, countOp);
+    return _clusters;
+}
+
+std::vector<Point2D> ClusterGenerator::getMergedClusters() const
+{
+    const auto countOp = [](size_t a, const std::vector<Point2D>& b) { return a + b.size(); };
+    const auto totalSize = std::accumulate(_clusters.begin(), _clusters.end(), 0, countOp);
 
     std::vector<Point2D> vectorOut;
     vectorOut.reserve(totalSize);
 
-    std::random_device rd;
-    std::mt19937 generator{ rd() };
-
-    for (const auto& descr : clustersInfo)
+    for (const auto& cluster : _clusters)
     {
-        std::normal_distribution<> distr_x{ descr.mean.x, descr.std_dev.x }; 
-        std::normal_distribution<> distr_y{ descr.mean.y, descr.std_dev.y }; 
-        for (size_t n = 0; n < descr.points_count; ++n)
-        {
-            vectorOut.emplace_back(Point2D{ distr_x(generator), distr_y(generator) }); 
-        }
+        vectorOut.insert(vectorOut.end(), cluster.begin(), cluster.end());
     }
 
     return vectorOut;
