@@ -2,6 +2,8 @@
 
 #include <point2D.h>
 
+#include <fstream>
+
 #include <CppUTest/TestHarness.h>
 
 TEST_GROUP(SavingPointsToFile) 
@@ -22,6 +24,11 @@ TEST_GROUP(SavingPointsToFile)
 
 TEST(SavingPointsToFile, DoesNotFailWithEmptyVector)
 {
-    const std::vector<Point2D> emptyVector;
-    CHECK(saveToFile(emptyVector)); // Writes an empty white image
+    const std::vector<std::vector<Point2D>> emptyVector;
+    const std::string filename("test.png");
+    CHECK(saveToFile(filename, emptyVector)); // Writes an empty white image
+
+    std::ifstream imageFile (filename.c_str());
+    CHECK(imageFile.good());
 }
+

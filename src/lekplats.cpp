@@ -28,13 +28,13 @@ int main(int argc, char* argv[])
     const auto means = kmeans(data, 2);
     const auto kmeansClusters = makeClusters(data, means);
 
-    if (!saveToFile("original.png", originalClusters[0], originalClusters[1]))
+    if (!saveToFile("original.png", originalClusters))
     {
         std::cerr << "Could not save first image" << std::endl;
         return EXIT_FAILURE;
     }
 
-    if (!saveToFile("kmeans.png", kmeansClusters[0], kmeansClusters[1]))
+    if (!saveToFile("kmeans.png", kmeansClusters))
     {
         std::cerr << "Could not save second image" << std::endl;
     }

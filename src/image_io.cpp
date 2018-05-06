@@ -5,54 +5,30 @@
 #include <QImage>
 #include <QPainter>
 
-const int HEIGHT = 480;
-const int WIDTH = 640;
-
-bool saveToFile(const std::string& filename,
-                const std::vector<Point2D>& points, const std::vector<Point2D>& points_2)
+bool saveToFile(const std::string& filename, const std::vector<std::vector<Point2D>>& points)
 {
+    const int HEIGHT = 480;
+    const int WIDTH = 640;
+    const Qt::GlobalColor COLORS[5] = { Qt::yellow, Qt::red, Qt::green, Qt::blue, Qt::magenta };
+
     QSize imageSize{ WIDTH, HEIGHT };
 
     QImage image { imageSize, QImage::Format_ARGB32_Premultiplied };
     image.fill(Qt::black);
     QPainter painter { &image };
 
-    QPen pen{ Qt::red };
+    QPen pen;
     pen.setWidth(2);
-    painter.setPen(pen);
-
-    for (const auto& point : points)
+    for (size_t i = 0; i < points.size(); ++i)
     {
-        painter.drawPoint(static_cast<int>(point.x), static_cast<int>(point.y));
-    }
+        pen.setColor(COLORS[ i % 5 ]);
+        painter.setPen(pen);
 
-    pen.setColor(Qt::yellow);
-    painter.setPen(pen);
-    for (const auto& point : points_2)
-    {
-        painter.drawPoint(static_cast<int>(point.x), static_cast<int>(point.y));
+        for (const auto& point : points[i])
+        {
+            painter.drawPoint(static_cast<int>(point.x), static_cast<int>(point.y));
+        }
     }
 
     return image.save(QString::fromStdString(filename));
 }
-
-bool saveToFile(const std::vector<Point2D>& points)
-{
-    QSize imageSize{ WIDTH, HEIGHT };
-
-    QImage image { imageSize, QImage::Format_ARGB32_Premultiplied };
-    image.fill(Qt::black);
-
-    QPainter painter { &image };
-    QPen pen{ Qt::white };
-    pen.setWidth(2);
-    painter.setPen(pen);
-
-    for (const auto& point : points)
-    {
-        painter.drawPoint(static_cast<int>(point.x), static_cast<int>(point.y));
-    }
-
-    return image.save("test_1.png");
-}
-
