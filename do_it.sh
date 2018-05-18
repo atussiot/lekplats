@@ -2,6 +2,7 @@
 
 set -e
 
+START_TIME=$(date +%s)
 BUILD_DIR="build"
 
 if [[ -d $BUILD_DIR ]]; then
@@ -27,4 +28,6 @@ ninja
 
 popd $BUILD_DIR >/dev/null
 
+END_TIME=$(date +%s)
+echo "Executed all in $(($END_TIME - $START_TIME)) seconds"
 echo "All good this time, bye bye"
