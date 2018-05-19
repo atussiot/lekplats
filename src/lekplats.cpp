@@ -41,6 +41,7 @@ int main(int argc, char* argv[])
     if (!saveToFile("kmeans.png", kmeansClusters))
     {
         std::cerr << "Could not save second image" << std::endl;
+        return EXIT_FAILURE;
     }
 
     for (size_t i = 0; i < means.size(); ++i)
