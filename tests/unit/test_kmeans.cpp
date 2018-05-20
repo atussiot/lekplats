@@ -39,7 +39,7 @@ TEST(Kmeans, throwsAnExceptionIfNumberOfMeansIsHigherThanNumberOfObservations)
     CHECK_THROWS(std::runtime_error, kmeans(std::vector<Point2D>{ }, 1));
 }
 
-TEST(Kmeans, initializesWithValuesFromTheData)
+TEST(Kmeans, forgyInitializesWithValuesFromTheData)
 {
     const size_t number_of_means = 4;
     const auto means = initializeMeansForgy(data, number_of_means);
@@ -49,6 +49,18 @@ TEST(Kmeans, initializesWithValuesFromTheData)
     {
         const auto found = std::find(data.begin(), data.end(), mean);
         CHECK(found != data.end());
+    }
+}
+
+TEST(Kmeans, randomPartitionAssignsARandomLabelToEachObservation)
+{
+    const size_t number_of_means = 6;
+    const auto labels = randomPartition(data, number_of_means);
+
+    UNSIGNED_LONGS_EQUAL(data.size(), labels.size());
+    for (const auto label : labels)
+    {
+        CHECK(label < number_of_means);
     }
 }
 

@@ -6,12 +6,33 @@
 #include <random>
 #include <stdexcept>
 
+// TODO: a more elegant way to select this
+const bool useForgy = false;
+
 // Main algorithm
 std::vector<Point2D> kmeans(const std::vector<Point2D>& data, const size_t k)
 {
-    auto means = initializeMeansForgy(data, k);
-    std::vector<size_t> previousLabels(k), labels = assignPointsToClusters(data, means);
+    // Preconditions
+    if (k > data.size())
+    {
+        throw std::runtime_error("");
+    }
 
+    // Initialization (initial assignment)
+    std::vector<Point2D> means;
+    std::vector<size_t> previousLabels(k), labels;
+
+    if (useForgy)
+    {
+        means = initializeMeansForgy(data, k);
+        labels = assignPointsToClusters(data, means);
+    }
+    else
+    {
+        labels = randomPartition(data, k);
+    }
+
+    // Update and reassign (until it converges)
     while (labels != previousLabels)
     {
         previousLabels = labels;
@@ -24,13 +45,8 @@ std::vector<Point2D> kmeans(const std::vector<Point2D>& data, const size_t k)
 
 // Implementations
 
-std::vector<Point2D> initializeMeansForgy(const std::vector<Point2D>& data, size_t k)
+std::vector<Point2D> initializeMeansForgy(const std::vector<Point2D>& data, const size_t k)
 {
-    if (k > data.size())
-    {
-        throw std::runtime_error("");
-    }
-
     std::unordered_set<Point2D> uniqueMeans;
 
     std::random_device rd;
@@ -47,6 +63,23 @@ std::vector<Point2D> initializeMeansForgy(const std::vector<Point2D>& data, size
                               std::make_move_iterator(uniqueMeans.end()));
 
     return means;
+}
+
+std::vector<size_t> randomPartition(const std::vector<Point2D>& data, const size_t k)
+{
+    std::vector<size_t> labels;
+    labels.reserve(data.size());
+
+    std::random_device rd;
+    std::mt19937 generator(rd());
+    std::uniform_int_distribution<size_t> dist{ 0, k - 1 };
+
+    for (size_t i = 0; i < data.size(); ++i)
+    {
+        labels.push_back(dist(generator));
+    }
+
+    return labels;
 }
 
 double squaredEuclidianDistance(const Point2D& a, const Point2D& b)

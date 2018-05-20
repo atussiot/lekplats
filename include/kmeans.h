@@ -15,6 +15,7 @@ std::vector<std::vector<Point2D>> makeClusters(const std::vector<Point2D>& data,
 
 // NOTE: Exposed only for testing purposes
 std::vector<Point2D> initializeMeansForgy(const std::vector<Point2D>& data, size_t k);
+std::vector<size_t> randomPartition(const std::vector<Point2D>& data, size_t k);
 std::vector<size_t> assignPointsToClusters(const std::vector<Point2D>& data,
                                            const std::vector<Point2D>& means);
 std::vector<Point2D> updateMeans(const std::vector<Point2D>& data,

@@ -28,7 +28,7 @@ Only tested on macOS High Sierra, but should work fairly easily on other Unix sy
 * Restructure the project to properly separate the libraries in the file system (and properly handle their installation)
 * Improve the visualization tool to handle arbitrarily located datasets
 * Try visualizing each iteration of the algorithm
-* Test other initializations of the k-means algorithm
+* Better way to select the initialization method of the algorithm
 * Implement other clustering methods
 * Do some benchmarking to compare them
 * Write more tests!
