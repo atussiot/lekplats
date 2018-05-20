@@ -43,7 +43,7 @@ const Clusters& ClusterGenerator::getClusters() const
     return _clusters;
 }
 
-std::vector<Point2D> ClusterGenerator::getMergedClusters() const
+std::vector<Point2D> ClusterGenerator::getMergedClusters(const bool shuffle) const
 {
     const auto countOp = [](size_t a, const std::vector<Point2D>& b) { return a + b.size(); };
     const auto totalSize = std::accumulate(_clusters.begin(), _clusters.end(), 0, countOp);
@@ -54,6 +54,12 @@ std::vector<Point2D> ClusterGenerator::getMergedClusters() const
     for (const auto& cluster : _clusters)
     {
         vectorOut.insert(vectorOut.end(), cluster.begin(), cluster.end());
+    }
+
+    if (shuffle)
+    {
+        auto rand = std::default_random_engine{ };
+        std::shuffle(vectorOut.begin(), vectorOut.end(), rand);
     }
 
     return vectorOut;
