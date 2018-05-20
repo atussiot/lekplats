@@ -15,7 +15,7 @@ std::vector<Point2D> kmeans(const std::vector<Point2D>& data, const size_t k)
     // Preconditions
     if (k > data.size())
     {
-        throw std::runtime_error("");
+        throw std::runtime_error("There cannot be more means than observations");
     }
 
     // Initialization (initial assignment)
