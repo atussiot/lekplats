@@ -21,6 +21,7 @@ Only tested on macOS High Sierra, but should work fairly easily on other Unix sy
 * Ninja (1.7.2)
 * CMake (3.11)
 * CppCheck (1.83)
+* Cloc (1.76)
 
 ### Possible future improvements
 
@@ -31,4 +32,5 @@ Only tested on macOS High Sierra, but should work fairly easily on other Unix sy
 * Better way to select the initialization method of the algorithm
 * Implement other clustering methods
 * Do some benchmarking to compare them
+* Make things like CppCheck, Cloc or Doxygen optional in the script
 * Write more tests!

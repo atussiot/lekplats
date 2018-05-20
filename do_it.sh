@@ -13,6 +13,8 @@ fi
 echo " "
 cppcheck -q --enable=all .
 echo " "
+cloc .
+echo " "
 
 mkdir build
 
