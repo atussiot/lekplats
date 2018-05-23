@@ -4,7 +4,7 @@
 #include <functional>
 
 // Needed these to help the compiler with std::unordered_set<Point2D>
-
+bool operator== (const Point2D& a, const Point2D& b);
 namespace std {
 
 template<>
@@ -18,5 +18,6 @@ struct hash<Point2D>
 
 }
 
-bool operator== (const Point2D& a, const Point2D& b);
+// Other useful functions
+double squaredEuclidianDistance(const Point2D& a, const Point2D& b);
 

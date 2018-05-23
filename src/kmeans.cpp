@@ -2,9 +2,9 @@
 
 #include <point2D_utils.h>
 
-#include <cmath>
 #include <random>
 #include <stdexcept>
+#include <unordered_set>
 
 // TODO: a more elegant way to select this
 const bool useForgy = false;
@@ -41,6 +41,25 @@ std::vector<Point2D> kmeans(const std::vector<Point2D>& data, const size_t k)
     }
 
     return means;
+}
+
+std::vector<std::vector<Point2D>> makeClusters(const std::vector<Point2D>& data,
+                                               const std::vector<Point2D>& means)
+{
+    std::vector<std::vector<Point2D>> clusters(means.size());
+
+    for (const auto& point : data)
+    {
+        std::vector<double> distances;
+        for (const auto& mean : means)
+        {
+            distances.push_back(squaredEuclidianDistance(point, mean));
+        }
+        const auto nearest = std::min_element(distances.begin(), distances.end());
+        clusters[std::distance(distances.begin(), nearest)].push_back(point);
+    }
+
+    return clusters;
 }
 
 // Implementations
@@ -82,11 +101,6 @@ std::vector<size_t> randomPartition(const std::vector<Point2D>& data, const size
     return labels;
 }
 
-double squaredEuclidianDistance(const Point2D& a, const Point2D& b)
-{
-    return std::pow(a.x - b.x, 2) + std::pow(a.y - b.y, 2);
-}
-
 std::vector<size_t> assignPointsToClusters(const std::vector<Point2D>& data,
                                            const std::vector<Point2D>& means)
 {
@@ -126,24 +140,5 @@ std::vector<Point2D> updateMeans(const std::vector<Point2D>& data,
     }
 
     return means;
-}
-
-std::vector<std::vector<Point2D>> makeClusters(const std::vector<Point2D>& data,
-                                               const std::vector<Point2D>& means)
-{
-    std::vector<std::vector<Point2D>> clusters(means.size());
-
-    for (const auto& point : data)
-    {
-        std::vector<double> distances;
-        for (const auto& mean : means)
-        {
-            distances.push_back(squaredEuclidianDistance(point, mean));
-        }
-        const auto nearest = std::min_element(distances.begin(), distances.end());
-        clusters[std::distance(distances.begin(), nearest)].push_back(point);
-    }
-
-    return clusters;
 }
 
