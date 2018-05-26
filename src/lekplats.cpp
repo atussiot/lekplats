@@ -46,7 +46,7 @@ int main(int argc, char* argv[])
 
     for (size_t i = 0; i < means.size(); ++i)
     {
-        std::cout << "Mean: " << means[i].x << " - " << means[i].y << std::endl;
+        std::cout << "Mean: " << means[i][0] << " - " << means[i][1] << std::endl;
         std::cout << "Points in the cluster: " << kmeansClusters[i].size() << std::endl;
         std::cout << std::endl;
     }

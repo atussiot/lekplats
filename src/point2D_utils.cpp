@@ -4,11 +4,16 @@
 
 bool operator== (const Point2D& a, const Point2D& b)
 {
-    return (a.x == b.x) && (a.y == b.y);
+    return a.data == b.data;
 }
 
 double squaredEuclidianDistance(const Point2D& a, const Point2D& b)
 {
-    return std::pow(a.x - b.x, 2) + std::pow(a.y - b.y, 2);
+    double dist = 0.0;
+    for (size_t i = 0; i < a.data.size(); ++i)
+    {
+        dist += std::pow(a[i] - b[i], 2);
+    }
+    return dist;
 }
 

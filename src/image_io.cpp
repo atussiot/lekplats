@@ -26,7 +26,7 @@ bool saveToFile(const std::string& filename, const std::vector<std::vector<Point
 
         for (const auto& point : points[i])
         {
-            painter.drawPoint(static_cast<int>(point.x), static_cast<int>(point.y));
+            painter.drawPoint(static_cast<int>(point[0]), static_cast<int>(point[1]));
         }
     }
 

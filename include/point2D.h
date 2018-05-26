@@ -1,22 +1,32 @@
 #pragma once
 
+#include <array>
+
 struct Point2D
 {
-    double x, y;
+    std::array<double, 2> data;
 
-    Point2D(double x = 0.0, double y = 0.0) : x(x), y(y) { }
+    Point2D(double x = 0.0, double y = 0.0)
+        : data { x, y }
+    { }
+
+    const double operator [] (const size_t i) const { return data[i]; }
 
     Point2D& operator+= (const Point2D& other)
     {
-        x += other.x;
-        y += other.y;
+        for (size_t i = 0; i < this->data.size(); ++i)
+        {
+            this->data[i] += other[i];
+        }
         return *this;
     }
 
-    Point2D& operator /= (double value)
+    Point2D& operator /= (double div)
     {
-        x /= value;
-        y /= value;
+        for (auto& value : data)
+        {
+            value /= div;
+        }
         return *this;
     }
 };

@@ -12,7 +12,12 @@ struct hash<Point2D>
 {
     size_t operator() (const Point2D& p) const
     {
-        return std::hash<double>()(p.x) ^ std::hash<double>()(p.y);
+        size_t ret = 0;
+        for (const auto value : p.data)
+        {
+            ret ^= std::hash<double>()(value);
+        }
+        return ret;
     }
 };
 

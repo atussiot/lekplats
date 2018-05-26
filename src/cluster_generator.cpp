@@ -20,8 +20,8 @@ Clusters generateClusters(const std::vector<ClusterDescription>& descriptions)
         std::vector<Point2D> cluster;
         cluster.reserve(descr.points_count);
 
-        std::normal_distribution<> distr_x{ descr.mean.x, descr.std_dev.x };
-        std::normal_distribution<> distr_y{ descr.mean.y, descr.std_dev.y };
+        std::normal_distribution<> distr_x{ descr.mean[0], descr.std_dev[0] };
+        std::normal_distribution<> distr_y{ descr.mean[1], descr.std_dev[1] };
 
         for (size_t n = 0; n < descr.points_count; ++n)
         {
