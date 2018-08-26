@@ -22,9 +22,10 @@ setup_library(LIB_NAME algorithms
               SOURCES src/kmeans.cpp
               DEPENDENCIES basics)
 
+# XXX: Not sure chaos game should be here, but that works for now
 setup_library(LIB_NAME synthdata
-              HEADERS include/cluster_generator.h
-              SOURCES src/cluster_generator.cpp
+              HEADERS include/cluster_generator.h include/chaos_game.h
+              SOURCES src/cluster_generator.cpp src/chaos_game.cpp
               DEPENDENCIES basics)
 
 setup_library(LIB_NAME visualization

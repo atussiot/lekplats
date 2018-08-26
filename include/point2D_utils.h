@@ -24,5 +24,7 @@ struct hash<Point2D>
 }
 
 // Other useful functions
+Point2D operator-(const Point2D& a, const Point2D& b);
+Point2D operator*(const double, const Point2D& point);
 double squaredEuclidianDistance(const Point2D& a, const Point2D& b);
 

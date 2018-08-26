@@ -1,3 +1,4 @@
+#include <chaos_game.h>
 #include <cluster_description.h>
 #include <cluster_generator.h>
 #include <image_io.h>
@@ -7,7 +8,30 @@
 #include <cstdlib>
 #include <iostream>
 
+int play_with_chaos();
+int play_with_kmeans();
+
 int main(int argc, char* argv[])
+{
+    // TODO: Split to different applications (?)
+    return play_with_chaos();
+    //return play_with_kmeans();
+}
+
+int play_with_chaos()
+{
+    std::vector<std::vector<Point2D>> points;
+    points.push_back(chaos_game());
+    if (!saveToFile("chaos.png", points))
+    {
+        std::cerr << "Could not save chaos game image" << std::endl;
+        return EXIT_FAILURE;
+    }
+
+    return EXIT_SUCCESS;
+}
+
+int play_with_kmeans()
 {
     ClusterDescription d1, d2, d3;
 
@@ -53,4 +77,3 @@ int main(int argc, char* argv[])
 
     return EXIT_SUCCESS;
 }
-
