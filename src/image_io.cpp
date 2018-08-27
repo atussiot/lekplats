@@ -7,8 +7,8 @@
 
 bool saveToFile(const std::string& filename, const std::vector<std::vector<Point2D>>& points)
 {
-    const int HEIGHT = 480;
-    const int WIDTH = 640;
+    const int HEIGHT = 2560;
+    const int WIDTH = 2560;
     const Qt::GlobalColor COLORS[5] = { Qt::yellow, Qt::red, Qt::green, Qt::blue, Qt::magenta };
 
     QSize imageSize{ WIDTH, HEIGHT };
@@ -18,7 +18,7 @@ bool saveToFile(const std::string& filename, const std::vector<std::vector<Point
     QPainter painter { &image };
 
     QPen pen;
-    pen.setWidth(2);
+    pen.setWidth(1);
     for (size_t i = 0; i < points.size(); ++i)
     {
         pen.setColor(COLORS[ i % 5 ]);
