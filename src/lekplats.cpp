@@ -20,8 +20,12 @@ int main(int argc, char* argv[])
 
 int play_with_chaos()
 {
+    constexpr size_t pointsCount = 500000;
+    constexpr size_t verticesCount = 5;
+
     std::vector<std::vector<Point2D>> points;
-    points.push_back(chaos_game());
+    points.emplace_back(chaos_game(pointsCount, verticesCount));
+
     if (!saveToFile("chaos.png", points))
     {
         std::cerr << "Could not save chaos game image" << std::endl;
