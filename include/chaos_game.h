@@ -1,7 +1,6 @@
 #pragma once
 
-#include <point2D.h>
-
+#include <complex>
 #include <vector>
 
-std::vector<Point2D> chaos_game(size_t pointsCount, size_t verticesCount);
+std::vector<std::complex<double>> chaos_game(size_t pointsCount, size_t verticesCount);

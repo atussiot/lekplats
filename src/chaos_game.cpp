@@ -1,25 +1,19 @@
 #include <chaos_game.h>
 
-#include <point2D_utils.h>
-
-#include <complex>
+#include <cmath>
 #include <random>
 
-std::vector<Point2D> regular_polygon_vertices(const Point2D& center, const double radius,
-                                              const size_t verticesCount);
+std::vector<std::complex<double>> regular_polygon_vertices(const size_t verticesCount);
 bool isNextTargetValid(size_t targetsCount, size_t previousIndex, size_t newIndex);
 
-std::vector<Point2D> chaos_game(const size_t pointsCount, const size_t verticesCount)
+std::vector<std::complex<double>> chaos_game(const size_t pointsCount, const size_t verticesCount)
 {
-    // XXX: Values picked to match the final image geometry, should disappear
-    const double radius = 1280.0;
-    const Point2D center{ radius, radius };
-    const auto vertices = regular_polygon_vertices(center, radius, verticesCount);
+    const auto vertices = regular_polygon_vertices(verticesCount);
 
-    std::vector<Point2D> points;
+    std::vector<std::complex<double>> points;
     points.reserve(pointsCount);
 
-    Point2D currentPosition{ 42.0, 57.0 }; // TODO: Initialize randomly? 
+    std::complex<double> currentPosition{ 0.42, 0.57 }; // TODO: Initialize randomly?
 
     std::random_device rd;
     std::mt19937 generator{ rd() };
@@ -47,25 +41,17 @@ std::vector<Point2D> chaos_game(const size_t pointsCount, const size_t verticesC
 
 // Below: implementation details, but would be good candidates for unit testing
 
-std::vector<Point2D> regular_polygon_vertices(const Point2D& center, const double radius,
-                                              const size_t verticesCount)
+std::vector<std::complex<double>> regular_polygon_vertices(const size_t verticesCount)
 {
-    std::vector<Point2D> vertices;
+    std::vector<std::complex<double>> vertices;
     vertices.reserve(verticesCount);
 
-    static constexpr double PI = 3.141592653589793238463;
+    static const double PI = std::acos(-1.0);
     const double angle = 2.0 * PI / static_cast<double>(verticesCount);
 
     for (size_t i = 0; i < verticesCount; ++i)
     {
-        // TODO: the half pi correction is to make it "point up". Works, but should not be done
-        // here (it's a rendering issue after all)
-        const auto vertexCmplx = std::polar(radius, static_cast<double>(i) * angle - PI * 0.5);
-        // TODO: Would be better to just work on the unit circle and scale later
-        // In fact, would be better to work with complex numbers everywhere here
-        Point2D vertex { vertexCmplx.real(), vertexCmplx.imag() };
-        vertex += center;
-        vertices.push_back(vertex);
+        vertices.emplace_back(std::polar(1.0, static_cast<double>(i) * angle));
     }
 
     return vertices;
