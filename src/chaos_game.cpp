@@ -3,9 +3,6 @@
 #include <cmath>
 #include <random>
 
-std::vector<std::complex<double>> regular_polygon_vertices(const size_t verticesCount);
-bool isNextTargetValid(size_t targetsCount, size_t previousIndex, size_t newIndex);
-
 std::vector<std::complex<double>> chaos_game(const size_t pointsCount, const size_t verticesCount)
 {
     const auto vertices = regular_polygon_vertices(verticesCount);
@@ -25,7 +22,8 @@ std::vector<std::complex<double>> chaos_game(const size_t pointsCount, const siz
     while (n < pointsCount)
     {
         const auto index = dist(generator);
-        if (!isNextTargetValid(verticesCount, previousSelection, index)) continue;
+        if (!isNextTargetValid(Restriction::Previous, verticesCount, previousSelection, index))
+            continue;
 
         const auto selectedVertex = vertices[index];
         const auto direction = selectedVertex - currentPosition;
@@ -57,13 +55,28 @@ std::vector<std::complex<double>> regular_polygon_vertices(const size_t vertices
     return vertices;
 }
 
-bool isNextTargetValid(size_t targetsCount, size_t previousIndex, size_t newIndex)
+bool isNextTargetValid(const Restriction restriction, const size_t verticesCount,
+                       const size_t previousIndex, const size_t newIndex)
 {
-    // TODO: Allow to choose among different strategies here
-    auto forbiddenIndex = previousIndex;
-    if (forbiddenIndex >= targetsCount)
+    size_t forbiddenIndex;
+    switch (restriction)
     {
-        forbiddenIndex %= targetsCount;
+    case Restriction::None:
+        return true;
+    case Restriction::Previous:
+        forbiddenIndex = previousIndex;
+        break;
+    case Restriction::NextAntiClockwise:
+        forbiddenIndex = previousIndex + 1;
+        break;
+    case Restriction::NextClockwise:
+        forbiddenIndex = previousIndex + verticesCount - 1;
+        break;
+    }
+
+    if (forbiddenIndex >= verticesCount) // Adjust in case we looped
+    {
+        forbiddenIndex %= verticesCount;
     }
 
     return newIndex != forbiddenIndex;

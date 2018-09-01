@@ -59,6 +59,7 @@ endif()
 set(UNIT_TEST_TARGET tests_unit)
 set(UNIT_TEST_SOURCES tests/unit/runner.cpp
                       tests/unit/test_image_io.cpp
+                      tests/unit/test_chaos_game.cpp
                       tests/unit/test_cluster_generator.cpp
                       tests/unit/test_kmeans.cpp)
 
