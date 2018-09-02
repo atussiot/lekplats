@@ -23,7 +23,7 @@ std::vector<std::complex<double>> ChaosGame::generate_points()
 
         const auto selectedVertex = vertices[index];
         const auto direction = selectedVertex - currentPosition;
-        currentPosition += 0.5 * direction;
+        currentPosition += fraction * direction;
 
         points.push_back(currentPosition);
         previousSelection = index;

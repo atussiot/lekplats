@@ -7,7 +7,7 @@
 enum class Restriction : uint8_t
 {
     None = 0,
-    Previous,
+    Previous, ///< The same vertex cannot be selected twice in a row
     NextAntiClockwise,
     NextClockwise,
 };
@@ -17,6 +17,9 @@ class ChaosGame
 public:
     size_t pointsCount = 500000; ///< Number of points to generate
     size_t polygonSize = 5; ///< Number of vertices in the polygon defining the playground
+    /// Each point is the fraction of the distance between the previous point and the target vertex
+    double fraction = 0.5;
+    /// The choice of the next target vertex may be retricted
     Restriction restriction = Restriction::None;
 
     ChaosGame() { }
