@@ -1,6 +1,7 @@
 #pragma once
 
 #include <complex>
+#include <random>
 #include <vector>
 
 enum class Restriction : uint8_t
@@ -11,10 +12,26 @@ enum class Restriction : uint8_t
     NextClockwise,
 };
 
-std::vector<std::complex<double>> chaos_game(size_t pointsCount, size_t verticesCount);
+class ChaosGame
+{
+public:
+    size_t pointsCount = 500000; ///< Number of points to generate
+    size_t polygonSize = 5; ///< Number of vertices in the polygon defining the playground
+    Restriction restriction = Restriction::None;
+
+    ChaosGame() { }
+    ChaosGame(size_t points, size_t polygon, Restriction restr)
+        : pointsCount(points), polygonSize(polygon), restriction(restr) { }
+
+    std::vector<std::complex<double>> generate_points();
+
+private:
+    std::random_device _rd;
+    std::mt19937 _generator{ _rd() };
+};
 
 // NOTE: Implementation details, exposed only for testing purposes
-std::vector<std::complex<double>> regular_polygon_vertices(const size_t verticesCount);
-bool isNextTargetValid(Restriction restriction, size_t verticesCount,
-                       size_t previousIndex, size_t newIndex);
+std::vector<std::complex<double>> regular_polygon_vertices(size_t polygonSize);
+size_t getNextIndex(size_t polygonSize, size_t index, bool clockwise);
+bool isNextTargetValid(const ChaosGame* game, size_t previousIndex, size_t newIndex);
 

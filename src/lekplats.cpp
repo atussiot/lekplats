@@ -20,11 +20,8 @@ int main(int argc, char* argv[])
 
 int play_with_chaos()
 {
-    constexpr size_t pointsCount = 500000;
-    constexpr size_t verticesCount = 5;
-    const auto dataset = chaos_game(pointsCount, verticesCount);
-
-    if (!saveToFile("chaos.png", dataset))
+    ChaosGame game { 500000, 4, Restriction::NextClockwise };
+    if (!saveToFile("chaos.png", game.generate_points()))
     {
         std::cerr << "Could not save chaos game image" << std::endl;
         return EXIT_FAILURE;

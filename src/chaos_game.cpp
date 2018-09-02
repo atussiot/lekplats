@@ -1,29 +1,25 @@
 #include <chaos_game.h>
 
 #include <cmath>
-#include <random>
 
-std::vector<std::complex<double>> chaos_game(const size_t pointsCount, const size_t verticesCount)
+std::vector<std::complex<double>> ChaosGame::generate_points()
 {
-    const auto vertices = regular_polygon_vertices(verticesCount);
+    const auto vertices = regular_polygon_vertices(polygonSize);
 
     std::vector<std::complex<double>> points;
     points.reserve(pointsCount);
 
     std::complex<double> currentPosition{ 0.42, 0.57 }; // TODO: Initialize randomly?
 
-    std::random_device rd;
-    std::mt19937 generator{ rd() };
-    std::uniform_int_distribution<size_t> dist{ 0, verticesCount - 1 };
+    std::uniform_int_distribution<size_t> dist{ 0, polygonSize - 1 };
 
     size_t n = 0;
-    size_t previousSelection = verticesCount + 1;
+    size_t previousSelection = polygonSize + 1;
 
     while (n < pointsCount)
     {
-        const auto index = dist(generator);
-        if (!isNextTargetValid(Restriction::Previous, verticesCount, previousSelection, index))
-            continue;
+        const auto index = dist(_generator);
+        if (!isNextTargetValid(this, previousSelection, index)) continue;
 
         const auto selectedVertex = vertices[index];
         const auto direction = selectedVertex - currentPosition;
@@ -37,17 +33,15 @@ std::vector<std::complex<double>> chaos_game(const size_t pointsCount, const siz
     return points;
 }
 
-// Below: implementation details, but would be good candidates for unit testing
-
-std::vector<std::complex<double>> regular_polygon_vertices(const size_t verticesCount)
+std::vector<std::complex<double>> regular_polygon_vertices(const size_t polygonSize)
 {
     std::vector<std::complex<double>> vertices;
-    vertices.reserve(verticesCount);
+    vertices.reserve(polygonSize);
 
     static const double PI = std::acos(-1.0);
-    const double angle = 2.0 * PI / static_cast<double>(verticesCount);
+    const double angle = 2.0 * PI / static_cast<double>(polygonSize);
 
-    for (size_t i = 0; i < verticesCount; ++i)
+    for (size_t i = 0; i < polygonSize; ++i)
     {
         vertices.emplace_back(std::polar(1.0, static_cast<double>(i) * angle));
     }
@@ -55,11 +49,18 @@ std::vector<std::complex<double>> regular_polygon_vertices(const size_t vertices
     return vertices;
 }
 
-bool isNextTargetValid(const Restriction restriction, const size_t verticesCount,
-                       const size_t previousIndex, const size_t newIndex)
+size_t getNextIndex(const size_t polygonSize, const size_t index, const bool clockwise)
+{
+    auto nextIndex = index + (clockwise ? polygonSize - 1 : 1);
+    if (nextIndex >= polygonSize) nextIndex %= polygonSize; // Adjust in case we looped
+    return nextIndex;
+}
+
+bool isNextTargetValid(const ChaosGame* game, const size_t previousIndex, const size_t newIndex)
 {
     size_t forbiddenIndex;
-    switch (restriction)
+    constexpr bool CLOCKWISE = true;
+    switch (game->restriction)
     {
     case Restriction::None:
         return true;
@@ -67,16 +68,11 @@ bool isNextTargetValid(const Restriction restriction, const size_t verticesCount
         forbiddenIndex = previousIndex;
         break;
     case Restriction::NextAntiClockwise:
-        forbiddenIndex = previousIndex + 1;
+        forbiddenIndex = getNextIndex(game->polygonSize, previousIndex, !CLOCKWISE);
         break;
     case Restriction::NextClockwise:
-        forbiddenIndex = previousIndex + verticesCount - 1;
+        forbiddenIndex = getNextIndex(game->polygonSize, previousIndex, CLOCKWISE);
         break;
-    }
-
-    if (forbiddenIndex >= verticesCount) // Adjust in case we looped
-    {
-        forbiddenIndex %= verticesCount;
     }
 
     return newIndex != forbiddenIndex;

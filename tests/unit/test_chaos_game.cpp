@@ -4,57 +4,45 @@
 
 TEST_GROUP(NextSelectedVertex)
 {
-    static constexpr size_t COUNT = 5;
-    static constexpr Restriction NO_RESTRICTION = Restriction::None;
-    static constexpr size_t PREVIOUS_INDEX = 2;
+    ChaosGame game;
+    static constexpr bool CLOCKWISE = true;
+    static constexpr size_t PREVIOUS_INDEX = 4;
+
+    void checkAllIndices(size_t restrictedIndex)
+    {
+        for (size_t nextIndex = 0; nextIndex < game.polygonSize; ++nextIndex)
+        {
+            const auto indexIsRestricted = nextIndex != restrictedIndex;
+            CHECK_EQUAL(indexIsRestricted, isNextTargetValid(&game, PREVIOUS_INDEX, nextIndex));
+        }
+    }
 };
 
 TEST(NextSelectedVertex, IsAlwaysValidWhenThereIsNoRestriction)
 {
-    for (size_t nextIndex = 0; nextIndex < COUNT; ++nextIndex)
-        CHECK(isNextTargetValid(NO_RESTRICTION, COUNT, PREVIOUS_INDEX, nextIndex));
-}
-
-TEST(NextSelectedVertex, IsNotValidIfSameAsRestrictedPreviousIndex)
-{
-    constexpr size_t nextIndex = PREVIOUS_INDEX;
-    CHECK_FALSE(isNextTargetValid(Restriction::Previous, COUNT, PREVIOUS_INDEX, nextIndex));
+    game.restriction = Restriction::None;
+    const auto restrictedIndex = game.polygonSize;
+    checkAllIndices(restrictedIndex);
 }
 
 TEST(NextSelectedVertex, IsValidIfDifferentThanRestrictedPreviousIndex)
 {
-    for (size_t nextIndex = 0; nextIndex < COUNT; ++nextIndex)
-        if (nextIndex != PREVIOUS_INDEX)
-            CHECK(isNextTargetValid(Restriction::Previous, COUNT, PREVIOUS_INDEX, nextIndex));
-}
-
-TEST(NextSelectedVertex, IsNotValidIfNextAntiClockwiseToRestrictedPreviousIndex)
-{
-    constexpr auto restriction = Restriction::NextAntiClockwise;
-    constexpr size_t nextIndex = PREVIOUS_INDEX + 1;
-    CHECK_FALSE(isNextTargetValid(restriction, COUNT, PREVIOUS_INDEX, nextIndex));
+    game.restriction = Restriction::Previous;
+    const auto restrictedIndex = PREVIOUS_INDEX;
+    checkAllIndices(restrictedIndex);
 }
 
 TEST(NextSelectedVertex, IsValidIfDifferentThanRestrictedNextAntiClockwise)
 {
-    constexpr auto restriction = Restriction::NextAntiClockwise;
-    for (size_t nextIndex = 0; nextIndex < COUNT; ++nextIndex)
-        if (nextIndex != PREVIOUS_INDEX + 1)
-            CHECK(isNextTargetValid(restriction, COUNT, PREVIOUS_INDEX, nextIndex));
-}
-
-TEST(NextSelectedVertex, IsNotValidIfNextClockwiseToRestrictedPreviousIndex)
-{
-    constexpr auto restriction = Restriction::NextClockwise;
-    constexpr size_t nextIndex = PREVIOUS_INDEX - 1;
-    CHECK_FALSE(isNextTargetValid(restriction, COUNT, PREVIOUS_INDEX, nextIndex));
+    game.restriction = Restriction::NextAntiClockwise;
+    const size_t restrictedIndex = getNextIndex(game.polygonSize, PREVIOUS_INDEX, !CLOCKWISE);
+    checkAllIndices(restrictedIndex);
 }
 
 TEST(NextSelectedVertex, IsValidIfDifferentThanRestrictedNextClockwise)
 {
-    constexpr auto restriction = Restriction::NextClockwise;
-    for (size_t nextIndex = 0; nextIndex < COUNT; ++nextIndex)
-        if (nextIndex != PREVIOUS_INDEX - 1)
-            CHECK(isNextTargetValid(restriction, COUNT, PREVIOUS_INDEX, nextIndex));
+    game.restriction = Restriction::NextClockwise;
+    const auto restrictedIndex = getNextIndex(game.polygonSize, PREVIOUS_INDEX, CLOCKWISE);
+    checkAllIndices(restrictedIndex);
 }
 
