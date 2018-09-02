@@ -37,8 +37,6 @@ bool saveToFile(const std::string& filename, const std::vector<std::complex<doub
 {
     constexpr int SIZE = 2560;
     constexpr auto HALF_SIZE = static_cast<double>(SIZE) / 2.0;
-    constexpr std::complex<double> ROT{ 0.0, -1.0 };
-    constexpr std::complex<double> CENTER{ HALF_SIZE, HALF_SIZE };
 
     QImage image { QSize(SIZE, SIZE), QImage::Format_ARGB32_Premultiplied };
     image.fill(Qt::black);
@@ -47,9 +45,10 @@ bool saveToFile(const std::string& filename, const std::vector<std::complex<doub
 
     for (const auto& point : points)
     {
-        // Rotate, scale and center to adapt to QImage's coordinate system
-        const auto tmp = (point * ROT) * HALF_SIZE + CENTER;
-        painter.drawPoint(tmp.real(), tmp.imag());
+        // Center, rotate and scale to adapt to QImage's coordinate system
+        const auto x = (1.0 + point.imag()) * HALF_SIZE;
+        const auto y = (1.0 - point.real()) * HALF_SIZE;
+        painter.drawPoint(x, y);
     }
 
     return image.save(QString::fromStdString(filename));
