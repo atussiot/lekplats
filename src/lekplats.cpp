@@ -24,20 +24,7 @@ int play_with_chaos()
     constexpr size_t verticesCount = 5;
     const auto dataset = chaos_game(pointsCount, verticesCount);
 
-    // XXX: This glue code is still a bit ridiculous
-    std::vector<Point2D> points;
-    points.reserve(pointsCount);
-    constexpr double size = 1280.0;
-    constexpr std::complex<double> rot{ 0.0, -1.0 };
-    for (const auto& point : dataset)
-    {
-        auto tmp = (point * rot) * size;
-        points.emplace_back(Point2D{ tmp.real() + size, tmp.imag() + size });
-    }
-    std::vector<std::vector<Point2D>> wrapper;
-    wrapper.emplace_back(points);
-
-    if (!saveToFile("chaos.png", wrapper))
+    if (!saveToFile("chaos.png", dataset))
     {
         std::cerr << "Could not save chaos game image" << std::endl;
         return EXIT_FAILURE;
