@@ -26,6 +26,8 @@ public:
     std::vector<std::complex<double>> generate_points();
 
 private:
+    std::complex<double> get_random();
+
     std::random_device _rd;
     std::mt19937 _generator{ _rd() };
 };

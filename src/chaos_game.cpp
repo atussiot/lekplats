@@ -9,7 +9,7 @@ std::vector<std::complex<double>> ChaosGame::generate_points()
     std::vector<std::complex<double>> points;
     points.reserve(pointsCount);
 
-    std::complex<double> currentPosition{ 0.42, 0.57 }; // TODO: Initialize randomly?
+    std::complex<double> currentPosition = get_random();
 
     std::uniform_int_distribution<size_t> dist{ 0, polygonSize - 1 };
 
@@ -31,6 +31,12 @@ std::vector<std::complex<double>> ChaosGame::generate_points()
     }
 
     return points;
+}
+
+std::complex<double> ChaosGame::get_random()
+{
+    std::uniform_real_distribution<> dist{ -1.0, 1.0 };
+    return std::complex<double>{ dist(_generator), dist(_generator) };
 }
 
 std::vector<std::complex<double>> regular_polygon_vertices(const size_t polygonSize)
