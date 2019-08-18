@@ -18,8 +18,8 @@ setup_library(LIB_NAME basics
               SOURCES src/point2D_utils.cpp)
 
 setup_library(LIB_NAME algorithms
-              HEADERS include/kmeans.h
-              SOURCES src/kmeans.cpp
+              HEADERS include/kmeans.h include/van_eck_sequence.h
+              SOURCES src/kmeans.cpp src/van_eck_sequence.cpp
               DEPENDENCIES basics)
 
 # XXX: Not sure chaos game should be here, but that works for now
@@ -61,7 +61,8 @@ set(UNIT_TEST_SOURCES tests/unit/runner.cpp
                       tests/unit/test_image_io.cpp
                       tests/unit/test_chaos_game.cpp
                       tests/unit/test_cluster_generator.cpp
-                      tests/unit/test_kmeans.cpp)
+                      tests/unit/test_kmeans.cpp
+                      tests/unit/test_van_eck.cpp)
 
 add_executable(${UNIT_TEST_TARGET} ${UNIT_TEST_SOURCES} ${LIB_SOURCES})
 target_compile_features(${UNIT_TEST_TARGET} PRIVATE cxx_std_11)
