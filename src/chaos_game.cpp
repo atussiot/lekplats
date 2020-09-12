@@ -47,9 +47,13 @@ std::vector<std::complex<double>> regular_polygon_vertices(const size_t polygonS
     static const double PI = std::acos(-1.0);
     const double angle = 2.0 * PI / static_cast<double>(polygonSize);
 
-    for (size_t i = 0; i < polygonSize; ++i)
-    {
-        vertices.emplace_back(std::polar(1.0, static_cast<double>(i) * angle));
+    for (size_t i = 0; i < polygonSize; ++i) {
+        auto vertex = std::polar(1.0, static_cast<double>(i) * angle);
+        if (!(polygonSize % 2)) {
+            static const auto ROT = std::polar(1.0, PI / 4.0);
+            vertex *= ROT;
+        }
+        vertices.push_back(vertex);
     }
 
     return vertices;
