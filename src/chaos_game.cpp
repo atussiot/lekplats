@@ -62,6 +62,13 @@ size_t getNextIndex(const size_t polygonSize, const size_t index, const bool clo
     return nextIndex;
 }
 
+size_t getSecondNextIndex(const size_t polygonSize, const size_t index, const bool clockwise)
+{
+    auto secondNext = index + (clockwise ? polygonSize - 2 : 2);
+    if (secondNext >= polygonSize) secondNext %= polygonSize; // Adjust in case we looped
+    return secondNext;
+}
+
 bool isNextTargetValid(const ChaosGame* game, const size_t previousIndex, const size_t newIndex)
 {
     size_t forbiddenIndex;
@@ -78,6 +85,9 @@ bool isNextTargetValid(const ChaosGame* game, const size_t previousIndex, const 
         break;
     case Restriction::NextClockwise:
         forbiddenIndex = getNextIndex(game->polygonSize, previousIndex, CLOCKWISE);
+        break;
+    case Restriction::SecondNextClockwise:
+        forbiddenIndex = getSecondNextIndex(game->polygonSize, previousIndex, CLOCKWISE);
         break;
     }
 

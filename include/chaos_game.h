@@ -10,6 +10,7 @@ enum class Restriction : uint8_t
     Previous, ///< The same vertex cannot be selected twice in a row
     NextAntiClockwise,
     NextClockwise,
+    SecondNextClockwise,
 };
 
 class ChaosGame
@@ -38,5 +39,6 @@ private:
 // NOTE: Implementation details, exposed only for testing purposes
 std::vector<std::complex<double>> regular_polygon_vertices(size_t polygonSize);
 size_t getNextIndex(size_t polygonSize, size_t index, bool clockwise);
+size_t getSecondNextIndex(size_t polygonSize, size_t index, bool clockwise);
 bool isNextTargetValid(const ChaosGame* game, size_t previousIndex, size_t newIndex);
 
