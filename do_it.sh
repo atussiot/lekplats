@@ -27,7 +27,7 @@ ninja
 # Test and run all the things
 ./tests_unit -c
 ./van_eck
-./chaos
+./chaos 4
 ./kmeans
 
 popd $BUILD_DIR >/dev/null
