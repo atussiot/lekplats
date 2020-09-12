@@ -16,7 +16,7 @@ enum class Restriction : uint8_t
 class ChaosGame
 {
 public:
-    size_t pointsCount = 500000; ///< Number of points to generate
+    size_t pointsCount = 200000; ///< Number of points to generate
     size_t polygonSize = 5; ///< Number of vertices in the polygon defining the playground
     /// Each point is the fraction of the distance between the previous point and the target vertex
     double fraction = 0.5;
@@ -24,8 +24,8 @@ public:
     Restriction restriction = Restriction::None;
 
     ChaosGame() { }
-    ChaosGame(size_t points, size_t polygon, Restriction restr)
-        : pointsCount(points), polygonSize(polygon), restriction(restr) { }
+    ChaosGame(double frac, size_t polygon, Restriction restr)
+        : fraction(frac), polygonSize(polygon), restriction(restr) { }
 
     std::vector<std::complex<double>> generate_points();
 
