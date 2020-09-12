@@ -33,17 +33,17 @@ setup_library(LIB_NAME visualization
               SOURCES src/image_io.cpp
               DEPENDENCIES Qt5::Gui basics)
 
-### Setup application
+### Setup Van Eck app
 
-set(MAIN_TARGET lekplats)
-set(APP_SOURCES apps/lekplats.cpp)
+set(MAIN_TARGET van_eck)
+set(APP_SOURCES apps/van_eck.cpp)
 
 add_executable(${MAIN_TARGET} ${APP_SOURCES} ${LIB_SOURCES} ${HEADERS})
 
 target_include_directories(${MAIN_TARGET}
                            PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
 target_compile_features(${MAIN_TARGET} PRIVATE cxx_std_11)
-target_link_libraries(${MAIN_TARGET} PRIVATE basics algorithms synthdata visualization)
+target_link_libraries(${MAIN_TARGET} PRIVATE algorithms)
 
 
 ### Setup Chaos game app
@@ -56,7 +56,20 @@ add_executable(${MAIN_TARGET} ${APP_SOURCES} ${LIB_SOURCES} ${HEADERS})
 target_include_directories(${MAIN_TARGET}
                            PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
 target_compile_features(${MAIN_TARGET} PRIVATE cxx_std_11)
-target_link_libraries(${MAIN_TARGET} PRIVATE basics synthdata visualization)
+target_link_libraries(${MAIN_TARGET} PRIVATE synthdata visualization)
+
+
+### Setup Van Eck app
+
+set(MAIN_TARGET kmeans)
+set(APP_SOURCES apps/kmeans.cpp)
+
+add_executable(${MAIN_TARGET} ${APP_SOURCES} ${LIB_SOURCES} ${HEADERS})
+
+target_include_directories(${MAIN_TARGET}
+                           PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
+target_compile_features(${MAIN_TARGET} PRIVATE cxx_std_11)
+target_link_libraries(${MAIN_TARGET} PRIVATE algorithms synthdata visualization)
 
 
 ### Tests

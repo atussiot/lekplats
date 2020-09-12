@@ -1,24 +1,13 @@
 #include <cluster_description.h>
 #include <cluster_generator.h>
-#include <image_io.h>
 #include <kmeans.h>
+#include <image_io.h>
 #include <point2D.h>
-#include <van_eck_sequence.h>
 
 #include <cstdlib>
 #include <iostream>
 
-int play_with_kmeans();
-int play_with_van_eck();
-
 int main(int argc, char* argv[])
-{
-    // TODO: Split to different applications (?)
-    //return play_with_kmeans();
-    return play_with_van_eck();
-}
-
-int play_with_kmeans()
 {
     ClusterDescription d1, d2, d3;
 
@@ -65,16 +54,3 @@ int play_with_kmeans()
     return EXIT_SUCCESS;
 }
 
-int play_with_van_eck()
-{
-    static const int N = 1000;
-    std::cout << "Number of iterations: " << N << std::endl << std::endl;
-    for (int ini = 0; ini < 11; ++ini) {
-        const auto S = generate_van_eck_seq_stats(N, ini);
-        std::cout << "[" << ini << "] ";
-        std::cout << "Number of elements: " << S.size() << " - ";
-        std::cout << "First missing value: " << first_missing_value(S) << " - ";
-        std::cout << "Highest value: " << highest_value(S) << std::endl;
-    }
-    return EXIT_SUCCESS;
-}
