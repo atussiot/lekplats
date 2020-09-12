@@ -1,4 +1,3 @@
-#include <chaos_game.h>
 #include <cluster_description.h>
 #include <cluster_generator.h>
 #include <image_io.h>
@@ -9,28 +8,14 @@
 #include <cstdlib>
 #include <iostream>
 
-int play_with_chaos();
 int play_with_kmeans();
 int play_with_van_eck();
 
 int main(int argc, char* argv[])
 {
     // TODO: Split to different applications (?)
-    //return play_with_chaos();
     //return play_with_kmeans();
     return play_with_van_eck();
-}
-
-int play_with_chaos()
-{
-    ChaosGame game { 500000, 4, Restriction::NextClockwise };
-    if (!saveToFile("chaos.png", game.generate_points()))
-    {
-        std::cerr << "Could not save chaos game image" << std::endl;
-        return EXIT_FAILURE;
-    }
-
-    return EXIT_SUCCESS;
 }
 
 int play_with_kmeans()

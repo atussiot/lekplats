@@ -46,6 +46,19 @@ target_compile_features(${MAIN_TARGET} PRIVATE cxx_std_11)
 target_link_libraries(${MAIN_TARGET} PRIVATE basics algorithms synthdata visualization)
 
 
+### Setup Chaos game app
+
+set(MAIN_TARGET chaos)
+set(APP_SOURCES src/chaos_app.cpp)
+
+add_executable(${MAIN_TARGET} ${APP_SOURCES} ${LIB_SOURCES} ${HEADERS})
+
+target_include_directories(${MAIN_TARGET}
+                           PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
+target_compile_features(${MAIN_TARGET} PRIVATE cxx_std_11)
+target_link_libraries(${MAIN_TARGET} PRIVATE basics synthdata visualization)
+
+
 ### Tests
 
 find_package(CppUTest REQUIRED QUIET)

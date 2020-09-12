@@ -27,6 +27,7 @@ ninja
 # Test and run all the things
 ./tests_unit -c
 ./lekplats
+./chaos
 
 popd $BUILD_DIR >/dev/null
 
