@@ -36,7 +36,7 @@ setup_library(LIB_NAME visualization
 ### Setup application
 
 set(MAIN_TARGET lekplats)
-set(APP_SOURCES src/lekplats.cpp)
+set(APP_SOURCES apps/lekplats.cpp)
 
 add_executable(${MAIN_TARGET} ${APP_SOURCES} ${LIB_SOURCES} ${HEADERS})
 
@@ -49,7 +49,7 @@ target_link_libraries(${MAIN_TARGET} PRIVATE basics algorithms synthdata visuali
 ### Setup Chaos game app
 
 set(MAIN_TARGET chaos)
-set(APP_SOURCES src/chaos_app.cpp)
+set(APP_SOURCES apps/chaos.cpp)
 
 add_executable(${MAIN_TARGET} ${APP_SOURCES} ${LIB_SOURCES} ${HEADERS})
 
