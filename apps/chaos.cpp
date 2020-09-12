@@ -6,13 +6,14 @@
 
 int main(int argc, char* argv[])
 {
-    if (argc != 2) {
-        std::cerr << "Usage: ./chaos <polygon-sides>" << std::endl;
+    if (argc != 3) {
+        std::cerr << "Usage: ./chaos <polygon-sides> <rule>" << std::endl;
         return EXIT_FAILURE;
     }
 
     const auto vertices = static_cast<size_t>(std::strtol(argv[1], nullptr, 10));
-    ChaosGame game { 500000, vertices, Restriction::NextClockwise };
+    const auto rule = static_cast<Restriction>(std::strtol(argv[2], nullptr, 10));
+    ChaosGame game { 500000, vertices, rule };
 
     if (!saveToFile("chaos.png", game.generate_points())) {
         std::cerr << "Could not save chaos game image" << std::endl;
