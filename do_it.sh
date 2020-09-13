@@ -29,6 +29,7 @@ ninja
 ./van_eck
 ./chaos 4 4 0.5
 ./kmeans
+./langton
 
 popd $BUILD_DIR >/dev/null
 
