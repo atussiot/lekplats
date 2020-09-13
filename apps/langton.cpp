@@ -6,19 +6,31 @@
 #include <iostream>
 
 static const size_t WIDTH = 160, HEIGHT = 100;
-static const int CELL_SIZE = 5;
-constexpr size_t IMG_WIDTH = WIDTH * CELL_SIZE;
-constexpr size_t IMG_HEIGHT = HEIGHT * CELL_SIZE;
+static const int CELL_SIZE = 10;
+constexpr size_t IMG_WIDTH = WIDTH * CELL_SIZE + WIDTH + 1;
+constexpr size_t IMG_HEIGHT = HEIGHT * CELL_SIZE + HEIGHT + 1;
 
 void draw_cell(QPainter& painter, const int x, const int y)
 {
-    const auto x_start = x * CELL_SIZE;
-    const auto y_start = y * CELL_SIZE;
+    const auto x_start = x * (CELL_SIZE + 1);
+    const auto y_start = y * (CELL_SIZE + 1);
     const auto x_end = x_start + CELL_SIZE;
     const auto y_end = y_start + CELL_SIZE;
 
     for (auto i = x_start; i < x_end; ++i) for (auto j = y_start; j < y_end; ++j)
         painter.drawPoint(i, j);
+}
+
+void draw_grid(QPainter& painter)
+{
+    QPen pen;
+    pen.setWidth(1);
+    pen.setColor(QColor{ 50, 50, 50 });
+    painter.setPen(pen);
+    for (size_t i = 0; i <= WIDTH; ++i) for (size_t j = 0; j < IMG_HEIGHT; ++j)
+        painter.drawPoint(i * (CELL_SIZE + 1), j);
+    for (size_t j = 0; j <= HEIGHT; ++j) for (size_t i = 0; i < IMG_WIDTH; ++i)
+        painter.drawPoint(i, j * (CELL_SIZE + 1));
 }
 
 bool save_grid(const std::array<std::array<bool, HEIGHT>, WIDTH>& grid)
@@ -33,6 +45,7 @@ bool save_grid(const std::array<std::array<bool, HEIGHT>, WIDTH>& grid)
     painter.setPen(pen);
     for (size_t i = 0; i < WIDTH; ++i) for (size_t j = 0; j < HEIGHT; ++j)
         if (grid[i][j]) draw_cell(painter, i, j);
+    draw_grid(painter);
     return image.save(QString{ "langton.png" });
 }
 
@@ -57,6 +70,7 @@ bool save_heatmap(const std::array<std::array<int, HEIGHT>, WIDTH>& heatmap)
             draw_cell(painter, i, j);
         }
     }
+    draw_grid(painter);
     return image.save(QString{ "langton-heatmap.png" });
 }
 
