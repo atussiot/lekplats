@@ -134,9 +134,43 @@ bool langtons_ant()
     return save_grid(grid, langton_filename) && save_heatmap(heatmap, heatmap_filename);
 }
 
+bool cellular_automaton_test()
+{
+    std::array<std::array<bool, HEIGHT>, WIDTH> grid;
+    for (size_t i = 0; i < WIDTH; ++i) for (size_t j = 0; j < HEIGHT; ++j) grid[i][j] = false;
+    grid[WIDTH / 2][HEIGHT / 2] = true;
+
+    const std::vector<std::pair<size_t, size_t>> neighbors {
+        { -1, -1 }, { 0, -1 }, { 1, -1 },
+        { -1, 0 },             { 1, 0 },
+        { -1, 1 },  { 0, 1},   { 1, 1 }
+    };
+
+    for (size_t it = 0; it < HEIGHT / 2; ++it) {
+        std::vector<std::pair<size_t, size_t>> to_mark;
+
+        for (size_t i = 1; i < WIDTH - 1; ++i) for (size_t j = 1; j < HEIGHT - 1; ++j) {
+            if (grid[i][j]) continue;
+
+            std::uint8_t neighbors_count = 0;
+            for (const auto& n : neighbors) {
+                if (grid[i + n.first][j + n.second]) ++neighbors_count;
+            }
+
+            if (neighbors_count == 1 || neighbors_count == 3)
+                to_mark.emplace_back(std::pair<size_t, size_t>{ i, j });
+        }
+
+        for (const auto& coord : to_mark) grid[coord.first][coord.second] = true;
+    }
+
+    const std::string test_filename{ "cell-test.png" };
+    return save_grid(grid, test_filename);
+}
+
 int main(int argc, char* argv[])
 {
-    if (!langtons_ant()) return EXIT_FAILURE;
+    if (!langtons_ant() || !cellular_automaton_test()) return EXIT_FAILURE;
 
     return EXIT_SUCCESS;
 }
