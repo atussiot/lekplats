@@ -146,7 +146,12 @@ bool cellular_automaton_test()
         { -1, 1 },  { 0, 1},   { 1, 1 }
     };
 
-    for (size_t it = 0; it < HEIGHT / 2; ++it) {
+    const std::string file_prefix{ "cell-test-" };
+    const std::string file_extension{ ".png" };
+    const std::string first_file = file_prefix + "0" + file_extension;
+    if (!save_grid(grid, first_file)) return false;
+
+    for (size_t it = 1; it < HEIGHT / 2; ++it) {
         std::vector<std::pair<size_t, size_t>> to_mark;
 
         for (size_t i = 1; i < WIDTH - 1; ++i) for (size_t j = 1; j < HEIGHT - 1; ++j) {
@@ -162,10 +167,12 @@ bool cellular_automaton_test()
         }
 
         for (const auto& coord : to_mark) grid[coord.first][coord.second] = true;
+
+        const std::string filename = file_prefix + std::to_string(it) + file_extension;
+        if (!save_grid(grid, filename)) return false;
     }
 
-    const std::string test_filename{ "cell-test.png" };
-    return save_grid(grid, test_filename);
+    return true;
 }
 
 int main(int argc, char* argv[])
