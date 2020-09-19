@@ -33,7 +33,8 @@ void draw_grid(QPainter& painter)
         painter.drawPoint(i, j * (CELL_SIZE + 1));
 }
 
-bool save_grid(const std::array<std::array<bool, HEIGHT>, WIDTH>& grid)
+bool save_grid(const std::array<std::array<bool, HEIGHT>, WIDTH>& grid,
+               const std::string& filename)
 {
     QSize image_size { IMG_WIDTH, IMG_HEIGHT };
     QImage image { image_size, QImage::Format_ARGB32_Premultiplied };
@@ -46,10 +47,11 @@ bool save_grid(const std::array<std::array<bool, HEIGHT>, WIDTH>& grid)
     for (size_t i = 0; i < WIDTH; ++i) for (size_t j = 0; j < HEIGHT; ++j)
         if (grid[i][j]) draw_cell(painter, i, j);
     draw_grid(painter);
-    return image.save(QString{ "langton.png" });
+    return image.save(QString::fromStdString(filename));
 }
 
-bool save_heatmap(const std::array<std::array<int, HEIGHT>, WIDTH>& heatmap)
+bool save_heatmap(const std::array<std::array<int, HEIGHT>, WIDTH>& heatmap,
+                  const std::string& filename)
 {
     QSize image_size { IMG_WIDTH, IMG_HEIGHT };
     QImage image { image_size, QImage::Format_ARGB32_Premultiplied };
@@ -71,7 +73,7 @@ bool save_heatmap(const std::array<std::array<int, HEIGHT>, WIDTH>& heatmap)
         }
     }
     draw_grid(painter);
-    return image.save(QString{ "langton-heatmap.png" });
+    return image.save(QString::fromStdString(filename));
 }
 
 bool ant_in_grid(const size_t ant_x, const size_t ant_y)
@@ -126,8 +128,11 @@ int main(int argc, char* argv[])
     }
     std::cout << "Ant escaped after " << iterations << " iterations!" << std::endl;
 
-    save_grid(grid);
-    save_heatmap(heatmap);
+    const std::string langton_filename{ "langton.png" };
+    const std::string heatmap_filename{ "langton-heatmap.png" };
+
+    save_grid(grid, langton_filename);
+    save_heatmap(heatmap, heatmap_filename);
 
     return EXIT_SUCCESS;
 }
