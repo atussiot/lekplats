@@ -88,7 +88,7 @@ size_t rotate_ant(const size_t ant_direction, const bool cell_on)
     return new_direction;
 }
 
-int main(int argc, char* argv[])
+bool langtons_ant()
 {
     std::array<std::array<bool, HEIGHT>, WIDTH> grid;
     for (size_t i = 0; i < WIDTH; ++i) for (size_t j = 0; j < HEIGHT; ++j) grid[i][j] = false;
@@ -122,7 +122,7 @@ int main(int argc, char* argv[])
             break;
         default:
             std::cerr << "Wrong ant direction, stopping..." << std::endl;
-            return EXIT_FAILURE;
+            return false;
         }
         ++iterations;
     }
@@ -131,8 +131,12 @@ int main(int argc, char* argv[])
     const std::string langton_filename{ "langton.png" };
     const std::string heatmap_filename{ "langton-heatmap.png" };
 
-    save_grid(grid, langton_filename);
-    save_heatmap(heatmap, heatmap_filename);
+    return save_grid(grid, langton_filename) && save_heatmap(heatmap, heatmap_filename);
+}
+
+int main(int argc, char* argv[])
+{
+    if (!langtons_ant()) return EXIT_FAILURE;
 
     return EXIT_SUCCESS;
 }
