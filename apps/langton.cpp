@@ -12,7 +12,9 @@ constexpr size_t IMG_HEIGHT = HEIGHT * CELL_SIZE + HEIGHT + 1;
 
 using grid_t = std::array<std::array<bool, HEIGHT>, WIDTH>;
 using heatmap_t = std::array<std::array<int, HEIGHT>, WIDTH>;
-using coordinates_t = std::vector<std::pair<size_t, size_t>>;
+using coordinate_t = std::pair<size_t, size_t>;
+using coordinates_t = std::vector<coordinate_t>;
+using bounding_box_t = std::pair<coordinate_t, coordinate_t>;
 
 void draw_cell(QPainter& painter, const int x, const int y)
 {
@@ -146,10 +148,37 @@ bool langtons_ant()
     return save_grid(grid, langton_filename) && save_heatmap(heatmap, heatmap_filename);
 }
 
+bounding_box_t compute_bounding_box(const grid_t& grid)
+{
+    bounding_box_t bb { { WIDTH, HEIGHT }, { 0, 0 } };
+
+    for (size_t i = 0; i < WIDTH; ++i) for (size_t j = 0; j < HEIGHT; ++j) {
+        if (grid[i][j]) {
+            if (i > bb.second.first) bb.second.first = i;
+            if (i < bb.first.first) bb.first.first = i;
+            if (j > bb.second.second) bb.second.second = j;
+            if (j < bb.first.second) bb.first.second = j;
+        }
+    }
+
+    return bb;
+}
+
+bool is_inside_grid(const bounding_box_t bb)
+{
+    if (bb.first.first == 1 || bb.first.second == 1
+        || bb.second.first == WIDTH - 1 || bb.second.second == HEIGHT - 1)
+        return false;
+    return true;
+}
+
 bool cellular_automaton_test()
 {
     auto grid = create_empty_grid();
-    grid[WIDTH / 2][HEIGHT / 2] = true;
+    const auto orig_x = WIDTH / 2, orig_y = HEIGHT / 2;
+    grid[orig_x][orig_y] = true;
+    bounding_box_t bb { { orig_x, orig_y }, { orig_x, orig_y } };
+    size_t it = 0;
 
     const coordinates_t neighbors {
         { -1, -1 }, { 0, -1 }, { 1, -1 },
@@ -159,13 +188,15 @@ bool cellular_automaton_test()
 
     const std::string file_prefix{ "cell-test-" };
     const std::string file_extension{ ".png" };
-    const std::string first_file = file_prefix + "0" + file_extension;
+    const std::string first_file = file_prefix + std::to_string(it) + file_extension;
     if (!save_grid(grid, first_file)) return false;
 
-    for (size_t it = 1; it < HEIGHT / 2; ++it) {
+    while (is_inside_grid(bb)) {
+        ++it;
         coordinates_t to_mark;
 
-        for (size_t i = 1; i < WIDTH - 1; ++i) for (size_t j = 1; j < HEIGHT - 1; ++j) {
+        for (size_t i = bb.first.first - 1; i <= bb.second.first + 1; ++i)
+        for (size_t j = bb.first.second - 1; j <= bb.second.second + 1; ++j) {
             if (grid[i][j]) continue;
 
             std::uint8_t neighbors_count = 0;
@@ -178,6 +209,10 @@ bool cellular_automaton_test()
         }
 
         for (const auto& coord : to_mark) grid[coord.first][coord.second] = true;
+        bb = compute_bounding_box(grid);
+        std::cout << it << " : " << to_mark.size() << " new cells - bounding box tl("
+                  << bb.first.first << ";" << bb.first.second << ") br(" << bb.second.first
+                  << ";" << bb.second.second << ")" << std::endl;
 
         const std::string filename = file_prefix + std::to_string(it) + file_extension;
         if (!save_grid(grid, filename)) return false;
