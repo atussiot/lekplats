@@ -172,6 +172,13 @@ bool is_inside_grid(const bounding_box_t bb)
     return true;
 }
 
+bool save_iteration(const grid_t& grid, const size_t it, const std::string& prefix)
+{
+    const std::string file_extension{ ".png" };
+    const std::string filename = prefix + std::to_string(it) + file_extension;
+    return save_grid(grid, filename);
+}
+
 bool cellular_automaton_test()
 {
     auto grid = create_empty_grid();
@@ -186,10 +193,8 @@ bool cellular_automaton_test()
         { -1, 1 },  { 0, 1},   { 1, 1 }
     };
 
-    const std::string file_prefix{ "cell-test-" };
-    const std::string file_extension{ ".png" };
-    const std::string first_file = file_prefix + std::to_string(it) + file_extension;
-    if (!save_grid(grid, first_file)) return false;
+    const std::string prefix{ "cell-test-" };
+    if (!save_iteration(grid, it, prefix)) return false;
 
     while (is_inside_grid(bb)) {
         ++it;
@@ -214,8 +219,7 @@ bool cellular_automaton_test()
                   << bb.first.first << ";" << bb.first.second << ") br(" << bb.second.first
                   << ";" << bb.second.second << ")" << std::endl;
 
-        const std::string filename = file_prefix + std::to_string(it) + file_extension;
-        if (!save_grid(grid, filename)) return false;
+        if (!save_iteration(grid, it, prefix)) return false;
     }
 
     return true;
