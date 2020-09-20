@@ -10,6 +10,10 @@ static const int CELL_SIZE = 10;
 constexpr size_t IMG_WIDTH = WIDTH * CELL_SIZE + WIDTH + 1;
 constexpr size_t IMG_HEIGHT = HEIGHT * CELL_SIZE + HEIGHT + 1;
 
+using grid_t = std::array<std::array<bool, HEIGHT>, WIDTH>;
+using heatmap_t = std::array<std::array<int, HEIGHT>, WIDTH>;
+using coordinates_t = std::vector<std::pair<size_t, size_t>>;
+
 void draw_cell(QPainter& painter, const int x, const int y)
 {
     const auto x_start = x * (CELL_SIZE + 1);
@@ -33,8 +37,7 @@ void draw_grid(QPainter& painter)
         painter.drawPoint(i, j * (CELL_SIZE + 1));
 }
 
-bool save_grid(const std::array<std::array<bool, HEIGHT>, WIDTH>& grid,
-               const std::string& filename)
+bool save_grid(const grid_t& grid, const std::string& filename)
 {
     QSize image_size { IMG_WIDTH, IMG_HEIGHT };
     QImage image { image_size, QImage::Format_ARGB32_Premultiplied };
@@ -50,8 +53,7 @@ bool save_grid(const std::array<std::array<bool, HEIGHT>, WIDTH>& grid,
     return image.save(QString::fromStdString(filename));
 }
 
-bool save_heatmap(const std::array<std::array<int, HEIGHT>, WIDTH>& heatmap,
-                  const std::string& filename)
+bool save_heatmap(const heatmap_t& heatmap, const std::string& filename)
 {
     QSize image_size { IMG_WIDTH, IMG_HEIGHT };
     QImage image { image_size, QImage::Format_ARGB32_Premultiplied };
@@ -76,6 +78,20 @@ bool save_heatmap(const std::array<std::array<int, HEIGHT>, WIDTH>& heatmap,
     return image.save(QString::fromStdString(filename));
 }
 
+grid_t create_empty_grid()
+{
+    grid_t grid;
+    for (size_t i = 0; i < WIDTH; ++i) for (size_t j = 0; j < HEIGHT; ++j) grid[i][j] = false;
+    return grid;
+}
+
+heatmap_t create_empty_heatmap()
+{
+    heatmap_t heatmap;
+    for (size_t i = 0; i < WIDTH; ++i) for (size_t j = 0; j < HEIGHT; ++j) heatmap[i][j] = 0;
+    return heatmap;
+}
+
 bool ant_in_grid(const size_t ant_x, const size_t ant_y)
 {
     return ant_x > 0 && ant_y > 0 && ant_x < WIDTH && ant_y < HEIGHT;
@@ -90,12 +106,8 @@ size_t rotate_ant(const size_t ant_direction, const bool cell_on)
 
 bool langtons_ant()
 {
-    std::array<std::array<bool, HEIGHT>, WIDTH> grid;
-    for (size_t i = 0; i < WIDTH; ++i) for (size_t j = 0; j < HEIGHT; ++j) grid[i][j] = false;
-    //grid[103][55] = true;
-
-    std::array<std::array<int, HEIGHT>, WIDTH> heatmap;
-    for (size_t i = 0; i < WIDTH; ++i) for (size_t j = 0; j < HEIGHT; ++j) heatmap[i][j] = 0;
+    auto grid = create_empty_grid();
+    auto heatmap = create_empty_heatmap();
 
     size_t ant_x = WIDTH / 2;
     size_t ant_y = HEIGHT / 2;
@@ -136,11 +148,10 @@ bool langtons_ant()
 
 bool cellular_automaton_test()
 {
-    std::array<std::array<bool, HEIGHT>, WIDTH> grid;
-    for (size_t i = 0; i < WIDTH; ++i) for (size_t j = 0; j < HEIGHT; ++j) grid[i][j] = false;
+    auto grid = create_empty_grid();
     grid[WIDTH / 2][HEIGHT / 2] = true;
 
-    const std::vector<std::pair<size_t, size_t>> neighbors {
+    const coordinates_t neighbors {
         { -1, -1 }, { 0, -1 }, { 1, -1 },
         { -1, 0 },             { 1, 0 },
         { -1, 1 },  { 0, 1},   { 1, 1 }
@@ -152,7 +163,7 @@ bool cellular_automaton_test()
     if (!save_grid(grid, first_file)) return false;
 
     for (size_t it = 1; it < HEIGHT / 2; ++it) {
-        std::vector<std::pair<size_t, size_t>> to_mark;
+        coordinates_t to_mark;
 
         for (size_t i = 1; i < WIDTH - 1; ++i) for (size_t j = 1; j < HEIGHT - 1; ++j) {
             if (grid[i][j]) continue;
