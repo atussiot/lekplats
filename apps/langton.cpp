@@ -3,7 +3,9 @@
 
 #include <array>
 #include <cstdlib>
+#include <iomanip>
 #include <iostream>
+#include <sstream>
 
 static const size_t WIDTH = 160, HEIGHT = 100;
 static const int CELL_SIZE = 10;
@@ -175,8 +177,26 @@ bool is_inside_grid(const bounding_box_t bb)
 bool save_iteration(const grid_t& grid, const size_t it, const std::string& prefix)
 {
     const std::string file_extension{ ".png" };
-    const std::string filename = prefix + std::to_string(it) + file_extension;
+    std::stringstream ss;
+    ss << std::setw(3) << std::setfill('0') << it;
+    const std::string filename = prefix + ss.str() + file_extension;
     return save_grid(grid, filename);
+}
+
+std::uint8_t count_alive_neighbors(const grid_t& grid, const size_t i, const size_t j)
+{
+    static const coordinates_t neighbors {
+        { -1, -1 }, { 0, -1 }, { 1, -1 },
+        { -1, 0 },             { 1, 0 },
+        { -1, 1 },  { 0, 1},   { 1, 1 }
+    };
+
+    std::uint8_t neighbors_count = 0;
+    for (const auto& n : neighbors) {
+        if (grid[i + n.first][j + n.second]) ++neighbors_count;
+    }
+
+    return neighbors_count;
 }
 
 bool cellular_automaton_test()
@@ -186,12 +206,6 @@ bool cellular_automaton_test()
     grid[orig_x][orig_y] = true;
     bounding_box_t bb { { orig_x, orig_y }, { orig_x, orig_y } };
     size_t it = 0;
-
-    const coordinates_t neighbors {
-        { -1, -1 }, { 0, -1 }, { 1, -1 },
-        { -1, 0 },             { 1, 0 },
-        { -1, 1 },  { 0, 1},   { 1, 1 }
-    };
 
     const std::string prefix{ "cell-test-" };
     if (!save_iteration(grid, it, prefix)) return false;
@@ -204,13 +218,9 @@ bool cellular_automaton_test()
         for (size_t j = bb.first.second - 1; j <= bb.second.second + 1; ++j) {
             if (grid[i][j]) continue;
 
-            std::uint8_t neighbors_count = 0;
-            for (const auto& n : neighbors) {
-                if (grid[i + n.first][j + n.second]) ++neighbors_count;
-            }
-
+            const auto neighbors_count = count_alive_neighbors(grid, i, j);
             if (neighbors_count == 1 || neighbors_count == 3)
-                to_mark.emplace_back(std::pair<size_t, size_t>{ i, j });
+                to_mark.emplace_back(coordinate_t{ i, j });
         }
 
         for (const auto& coord : to_mark) grid[coord.first][coord.second] = true;
@@ -225,9 +235,59 @@ bool cellular_automaton_test()
     return true;
 }
 
+bool game_of_life()
+{
+    auto grid = create_empty_grid();
+    grid [WIDTH / 2][HEIGHT / 2] = true;
+    grid [WIDTH / 2 + 1][HEIGHT / 2] = true;
+    grid [WIDTH / 2 + 2][HEIGHT / 2 - 1] = true;
+    grid [WIDTH / 2 + 2][HEIGHT / 2 + 1] = true;
+    grid [WIDTH / 2 + 2][HEIGHT / 2 - 3] = true;
+    grid [WIDTH / 2 + 3][HEIGHT / 2 - 2] = true;
+
+    grid [WIDTH / 2 + 4][HEIGHT / 2 - 8] = true;
+    grid [WIDTH / 2 + 5][HEIGHT / 2 - 7] = true;
+    grid [WIDTH / 2 + 4][HEIGHT / 2 - 7] = true;
+    grid [WIDTH / 2 + 5][HEIGHT / 2 - 8] = true;
+
+    auto bb = compute_bounding_box(grid);
+    size_t it = 0;
+
+    const std::string prefix { "game-of-life-" };
+    if (!save_iteration(grid, it, prefix)) return false;
+
+    coordinates_t to_life, to_death;
+
+    do {
+        ++it;
+        to_life.clear();
+        to_death.clear();
+
+        for (size_t i = bb.first.first - 1; i <= bb.second.first + 1; ++i)
+        for (size_t j = bb.first.second - 1; j <= bb.second.second + 1; ++j) {
+            const auto neighbors_count = count_alive_neighbors(grid, i, j);
+            if (grid[i][j]) {
+                if (neighbors_count < 2 || neighbors_count > 3)
+                    to_death.emplace_back(coordinate_t{ i, j });
+            } else {
+                if (neighbors_count == 3)
+                    to_life.emplace_back(coordinate_t{ i, j });
+            }
+        }
+
+        for (const auto& coord : to_life) grid[coord.first][coord.second] = true;
+        for (const auto& coord : to_death) grid[coord.first][coord.second] = false;
+
+        bb = compute_bounding_box(grid);
+        if (!save_iteration(grid, it, prefix)) return false;
+    } while (is_inside_grid(bb) && (to_life.size() != 0 || to_death.size() != 0));
+
+    return true;
+}
+
 int main(int argc, char* argv[])
 {
-    if (!langtons_ant() || !cellular_automaton_test()) return EXIT_FAILURE;
+    if (!langtons_ant() || !cellular_automaton_test() || !game_of_life()) return EXIT_FAILURE;
 
     return EXIT_SUCCESS;
 }
