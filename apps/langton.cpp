@@ -235,6 +235,21 @@ bool cellular_automaton_test()
     return true;
 }
 
+size_t population(const grid_t& grid)
+{
+    size_t count = 0;
+    for (size_t i = 0; i < WIDTH; ++i) for (size_t j = 0; j < HEIGHT; ++j)
+        if (grid[i][j]) ++count;
+    return count;
+}
+
+coordinate_t bounding_box_size(const bounding_box_t& bb)
+{
+    const auto width = bb.second.first - bb.first.first;
+    const auto height = bb.second.second - bb.first.second;
+    return coordinate_t{ width, height };
+}
+
 bool game_of_life()
 {
     auto grid = create_empty_grid();
@@ -280,6 +295,12 @@ bool game_of_life()
 
         bb = compute_bounding_box(grid);
         if (!save_iteration(grid, it, prefix)) return false;
+
+        const auto pop = population(grid);
+        const auto bb_size = bounding_box_size(bb);
+        std::cout << it << " - Population = " << pop << " - BB = " << bb_size.first << "*"
+                  << bb_size.second << std::endl;
+
     } while (is_inside_grid(bb) && (to_life.size() != 0 || to_death.size() != 0));
 
     return true;
