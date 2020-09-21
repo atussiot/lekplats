@@ -40,7 +40,7 @@ include("cmake/setup_app.cmake")
 setup_app(APP_NAME van_eck DEPENDENCIES algorithms)
 setup_app(APP_NAME chaos DEPENDENCIES synthdata visualization)
 setup_app(APP_NAME kmeans DEPENDENCIES algorithms synthdata visualization)
-setup_app(APP_NAME langton DEPENDENCIES Qt5::Gui)
+setup_app(APP_NAME cellular_automata DEPENDENCIES Qt5::Gui)
 
 ### Tests
 
