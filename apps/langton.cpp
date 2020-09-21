@@ -16,7 +16,28 @@ using grid_t = std::array<std::array<bool, HEIGHT>, WIDTH>;
 using heatmap_t = std::array<std::array<int, HEIGHT>, WIDTH>;
 using coordinate_t = std::pair<size_t, size_t>;
 using coordinates_t = std::vector<coordinate_t>;
-using bounding_box_t = std::pair<coordinate_t, coordinate_t>;
+
+struct bounding_box_t
+{
+    coordinate_t tl, br;
+
+    bounding_box_t(const coordinate_t& top_left, const coordinate_t& bottom_right)
+        : tl(top_left), br(bottom_right) {}
+
+    bool is_inside_grid()
+    {
+        if (tl.first == 1 || tl.second == 1 || br.first == WIDTH - 1 || br.second == HEIGHT - 1)
+            return false;
+        return true;
+    }
+
+    coordinate_t size()
+    {
+        const auto width = br.first - tl.first;
+        const auto height = br.second - tl.second;
+        return coordinate_t{ width, height };
+    }
+};
 
 void draw_cell(QPainter& painter, const int x, const int y)
 {
@@ -156,22 +177,14 @@ bounding_box_t compute_bounding_box(const grid_t& grid)
 
     for (size_t i = 0; i < WIDTH; ++i) for (size_t j = 0; j < HEIGHT; ++j) {
         if (grid[i][j]) {
-            if (i > bb.second.first) bb.second.first = i;
-            if (i < bb.first.first) bb.first.first = i;
-            if (j > bb.second.second) bb.second.second = j;
-            if (j < bb.first.second) bb.first.second = j;
+            if (i > bb.br.first) bb.br.first = i;
+            if (i < bb.tl.first) bb.tl.first = i;
+            if (j > bb.br.second) bb.br.second = j;
+            if (j < bb.tl.second) bb.tl.second = j;
         }
     }
 
     return bb;
-}
-
-bool is_inside_grid(const bounding_box_t bb)
-{
-    if (bb.first.first == 1 || bb.first.second == 1
-        || bb.second.first == WIDTH - 1 || bb.second.second == HEIGHT - 1)
-        return false;
-    return true;
 }
 
 bool save_iteration(const grid_t& grid, const size_t it, const std::string& prefix)
@@ -210,12 +223,12 @@ bool cellular_automaton_test()
     const std::string prefix{ "cell-test-" };
     if (!save_iteration(grid, it, prefix)) return false;
 
-    while (is_inside_grid(bb)) {
+    while (bb.is_inside_grid()) {
         ++it;
         coordinates_t to_mark;
 
-        for (size_t i = bb.first.first - 1; i <= bb.second.first + 1; ++i)
-        for (size_t j = bb.first.second - 1; j <= bb.second.second + 1; ++j) {
+        for (size_t i = bb.tl.first - 1; i <= bb.br.first + 1; ++i)
+        for (size_t j = bb.tl.second - 1; j <= bb.br.second + 1; ++j) {
             if (grid[i][j]) continue;
 
             const auto neighbors_count = count_alive_neighbors(grid, i, j);
@@ -226,8 +239,8 @@ bool cellular_automaton_test()
         for (const auto& coord : to_mark) grid[coord.first][coord.second] = true;
         bb = compute_bounding_box(grid);
         std::cout << it << " : " << to_mark.size() << " new cells - bounding box tl("
-                  << bb.first.first << ";" << bb.first.second << ") br(" << bb.second.first
-                  << ";" << bb.second.second << ")" << std::endl;
+                  << bb.tl.first << ";" << bb.tl.second << ") br(" << bb.br.first
+                  << ";" << bb.br.second << ")" << std::endl;
 
         if (!save_iteration(grid, it, prefix)) return false;
     }
@@ -241,13 +254,6 @@ size_t population(const grid_t& grid)
     for (size_t i = 0; i < WIDTH; ++i) for (size_t j = 0; j < HEIGHT; ++j)
         if (grid[i][j]) ++count;
     return count;
-}
-
-coordinate_t bounding_box_size(const bounding_box_t& bb)
-{
-    const auto width = bb.second.first - bb.first.first;
-    const auto height = bb.second.second - bb.first.second;
-    return coordinate_t{ width, height };
 }
 
 bool game_of_life()
@@ -278,8 +284,8 @@ bool game_of_life()
         to_life.clear();
         to_death.clear();
 
-        for (size_t i = bb.first.first - 1; i <= bb.second.first + 1; ++i)
-        for (size_t j = bb.first.second - 1; j <= bb.second.second + 1; ++j) {
+        for (size_t i = bb.tl.first - 1; i <= bb.br.first + 1; ++i)
+        for (size_t j = bb.tl.second - 1; j <= bb.br.second + 1; ++j) {
             const auto neighbors_count = count_alive_neighbors(grid, i, j);
             if (grid[i][j]) {
                 if (neighbors_count < 2 || neighbors_count > 3)
@@ -297,11 +303,11 @@ bool game_of_life()
         if (!save_iteration(grid, it, prefix)) return false;
 
         const auto pop = population(grid);
-        const auto bb_size = bounding_box_size(bb);
+        const auto bb_size = bb.size();
         std::cout << it << " - Population = " << pop << " - BB = " << bb_size.first << "*"
                   << bb_size.second << std::endl;
 
-    } while (is_inside_grid(bb) && (to_life.size() != 0 || to_death.size() != 0));
+    } while (bb.is_inside_grid() && (to_life.size() != 0 || to_death.size() != 0));
 
     return true;
 }
